@@ -13,6 +13,7 @@ function App() {
     const [user, setUser] = useState({})
 
     var provider = new firebase.auth.GoogleAuthProvider();
+    var fbProvider = new firebase.auth.FacebookAuthProvider();
 
     const handleGoogleSignIn = () => {
         firebase.auth()
@@ -33,9 +34,31 @@ function App() {
             });
     }
 
+    const handleFacebookSignIn = () => {
+        firebase
+            .auth()
+            .signInWithPopup(fbProvider)
+            .then((result) => {
+                var credential = result.credential;
+                var user = result.user;
+                var accessToken = credential.accessToken;
+                console.log('fb user', user);
+                setUser(user);
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                var email = error.email;
+                var credential = error.credential;
+                console.log(errorCode, errorMessage, email, credential);
+            });
+    }
+
     return (
         <div className="App">
             <button onClick={handleGoogleSignIn}>sign in using google</button>
+            <br />
+            <button onClick={handleFacebookSignIn}>sign in using facebook</button>
             <h2>{user.displayName}</h2>
             <h3>{user.email}</h3>
             <img src={user.photoURL} alt="" />
